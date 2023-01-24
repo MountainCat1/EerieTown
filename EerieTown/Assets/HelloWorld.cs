@@ -1,18 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class HelloWorld : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private GameManager gameManager;
+
+
+    private void Start()
     {
-        
+        gameManager.OnTick += OnTick;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTick()
     {
-        
+        Debug.Log("XD");
     }
 }
