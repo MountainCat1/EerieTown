@@ -24,7 +24,7 @@ public class MapSelector : MonoBehaviour
 
     #endregion
 
-    private List<GameObject> _instantiatedSelectionMarkers = new();
+    private readonly List<GameObject> _instantiatedSelectionMarkers = new();
 
     #region Events
 
@@ -53,6 +53,8 @@ public class MapSelector : MonoBehaviour
         CheckHover();
 
         UpdateSelection();
+
+        UpdateSelectionMarkers();
     }
 
     private void UpdateSelection()
@@ -63,8 +65,22 @@ public class MapSelector : MonoBehaviour
 
         var point = hit.point;
 
-        SelectRectangle(new Vector2(point.x, point.z), SelectionSize);
+        var newSelection = SelectRectangle(new Vector2(point.x, point.z), SelectionSize);
 
+        // Check if tempSelection is the same as selection
+        // 
+
+        bool same = newSelection.Count == Selection.Count && !Selection.Except(newSelection).Any();
+
+        if (!same)
+        {
+            SelectionChanged?.Invoke(Selection, newSelection);
+            Selection = newSelection;
+        }
+    }
+
+    private void UpdateSelectionMarkers()
+    {
         foreach (var instantiatedSelectionMarker in _instantiatedSelectionMarkers)
         {
             Destroy(instantiatedSelectionMarker);
@@ -83,6 +99,8 @@ public class MapSelector : MonoBehaviour
         }
     }
 
+    
+    
     private void CheckHover()
     {
         var ray = _camera.ScreenPointToRay(Input.mousePosition);
@@ -98,11 +116,6 @@ public class MapSelector : MonoBehaviour
 
         HoveredTile = mapTile;
         TileHoveredEvent?.Invoke(mapTile);
-
-        // if (!hit.transform.TryGetComponent<MapTile>(out var mapTile))
-        // {
-        //     TileHovered?.Invoke(null);
-        // }
     }
 
     private void InputManagerMainClickedEvent()
@@ -128,13 +141,10 @@ public class MapSelector : MonoBehaviour
         TileSelectedEvent?.Invoke(mapTile);
     }
 
-    void SelectRectangle(Vector2 pos, int selectionSize)
+    List<MapTile> SelectRectangle(Vector2 pos, int selectionSize)
     {
-        var tempSelection = new List<MapTile>();
-
-        // Select tiles
-        // 
-
+        var selection = new List<MapTile>();
+        
         if (selectionSize % 2 == 1)
         {
             var posInt = Vector2Int.RoundToInt(pos);
@@ -144,7 +154,7 @@ public class MapSelector : MonoBehaviour
                 for (int y = posInt.y - selectionSize / 2; y <= posInt.y + selectionSize / 2; y++)
                 {
                     var position = new Vector2Int(x, y);
-                    tempSelection.Add(_mapManager.GetRequiredMapTile(position));
+                    selection.Add(_mapManager.GetRequiredMapTile(position));
                 }
             }
         }
@@ -157,21 +167,11 @@ public class MapSelector : MonoBehaviour
                 for (int y = posInt.y - selectionSize / 2; y <= posInt.y + selectionSize / 2 - 1; y++)
                 {
                     var position = new Vector2Int(x, y);
-                    tempSelection.Add(_mapManager.GetRequiredMapTile(position));
+                    selection.Add(_mapManager.GetRequiredMapTile(position));
                 }
             }
         }
 
-        // Check if tempSelection is the same as selection
-        // 
-
-        bool same = tempSelection.Count == Selection.Count && !Selection.Except(tempSelection).Any();
-
-        if (same)
-            return;
-
-        // ====================
-        SelectionChanged?.Invoke(Selection, tempSelection);
-        Selection = tempSelection;
+        return selection;
     }
 }
