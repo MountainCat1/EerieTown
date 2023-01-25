@@ -21,7 +21,7 @@ public class BuilderController : MonoBehaviour
 
     private bool PlaceBuilding(Building buildingPrefab, Vector2Int position)
     {
-        var building = Instantiate(buildingPrefab);
+        var building = Instantiate(buildingPrefab, new Vector3(position.x, 0, position.y), Quaternion.identity);
         building.Position = position;
 
         return _mapManager.PlaceBuilding(buildingPrefab);
