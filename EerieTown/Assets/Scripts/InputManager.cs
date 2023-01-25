@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
@@ -13,10 +14,13 @@ public class InputManager : MonoBehaviour
 
     public void OnFire(InputAction.CallbackContext context)
     {
-        if(context.started)
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        if (context.started)
             MainClickedEvent?.Invoke();
-        
-        if(context.canceled)
+
+        if (context.canceled)
             MainClickedUpEvent?.Invoke();
     }
 }

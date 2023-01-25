@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("In Game")]
-    [SerializeField] private bool paused = false;
+    [field: Header("In Game")] 
+    [field: SerializeField] public bool Paused { get; private set; } = false;
 
     #region Settings
 
@@ -19,20 +20,28 @@ public class GameManager : MonoBehaviour
     public event Action TickEvent;
 
     #endregion
+
+    public int Tick { get; private set; } = 0;
     
     public void Awake()
     {
         StartCoroutine(TickCoroutine());
     }
 
+    public void ChangePause()
+    {
+        Paused = !Paused;
+    }
 
     private IEnumerator TickCoroutine()
     {
         while (true)
         {
-            while (paused)
+            while (Paused)
                 yield return new WaitForEndOfFrame();
-                
+
+            Tick++;
+            
             TickEvent?.Invoke();
 
             yield return new WaitForSeconds(1f / ticksPerSecond);
