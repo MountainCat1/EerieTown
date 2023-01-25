@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
 
     #region Events
 
-    public Action OnTick;
+    public event Action TickEvent;
 
     #endregion
     
@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
             while (paused)
                 yield return new WaitForEndOfFrame();
                 
-            OnTick?.Invoke();
+            TickEvent?.Invoke();
 
             yield return new WaitForSeconds(1f / ticksPerSecond);
         }
