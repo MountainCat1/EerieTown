@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class MapSelector : MonoBehaviour
 {
@@ -11,13 +9,12 @@ public class MapSelector : MonoBehaviour
 
     [SerializeField] private InputManager _inputManager;
     [SerializeField] private MapManager _mapManager;
-    [SerializeField] private new Camera _camera;
+    [SerializeField] private Camera _camera;
 
     #endregion
 
     #region Configuration
 
-    [SerializeField] private string _targetTags;
     [SerializeField] private LayerMask _targetMask;
     [SerializeField] private GameObject _selectionMarkerPrefab;
     [SerializeField] private float _selectionMarkersYPosition = 0.125f;
@@ -60,16 +57,14 @@ public class MapSelector : MonoBehaviour
     private void UpdateSelection()
     {
         var ray = _camera.ScreenPointToRay(Input.mousePosition);
-        if (!Physics.Raycast(ray, out var hit))
+        if (!Physics.Raycast(ray, out var hit,  float.PositiveInfinity, _targetMask))
             return;
 
         var point = hit.point;
 
         var newSelection = SelectRectangle(new Vector2(point.x, point.z), SelectionSize);
-
-        // Check if tempSelection is the same as selection
-        // 
-
+        
+        // Check if old selection is the same as an old one
         bool same = newSelection.Count == Selection.Count && !Selection.Except(newSelection).Any();
 
         if (!same)
@@ -121,7 +116,7 @@ public class MapSelector : MonoBehaviour
     private void InputManagerMainClickedEvent()
     {
         var ray = _camera.ScreenPointToRay(Input.mousePosition);
-        if (!Physics.Raycast(ray, out var hit))
+        if (!Physics.Raycast(ray, out var hit, float.PositiveInfinity, _targetMask))
             return;
 
         var point = hit.point;
