@@ -285,9 +285,9 @@ GameObject:
   - component: {fileID: 613124470}
   - component: {fileID: 613124469}
   - component: {fileID: 613124468}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Plane
-  m_TagString: Map
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -906,10 +906,9 @@ MonoBehaviour:
   _inputManager: {fileID: 893181178}
   _mapManager: {fileID: 1796815214}
   _camera: {fileID: 1316523160}
-  _targetTags: Map
   _targetMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   _selectionMarkerPrefab: {fileID: 2665120397644279844, guid: a66ef94d7efcbf6499ab87a1976db729, type: 3}
   _selectionMarkersYPosition: 0
   <SelectionSize>k__BackingField: 1
