@@ -76,13 +76,16 @@ public class MapManager : MonoBehaviour
         return mapTile;
     }
 
-    private MapTile GetRequiredMapTile(Vector2Int position)
+    public MapTile GetRequiredMapTile(Vector2Int position)
     {
         if (Tiles.TryGetValue(position, out var foundTile))
             return foundTile;
 
         
-        var newTile = new MapTile();
+        var newTile = new MapTile()
+        {
+            Position = position
+        };
 
         Tiles.Add(position, newTile);
         

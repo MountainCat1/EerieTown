@@ -28,7 +28,7 @@ namespace RTS_Cam
             Undo.RecordObject(camera, "RTS_CAmera");
             tabs.Draw();
             if (GUI.changed)
-                camera.lastTab = tabs.curMethodIndex;
+                camera.lastTab = tabs._curMethodIndex;
             EditorUtility.SetDirty(camera);
         }
 

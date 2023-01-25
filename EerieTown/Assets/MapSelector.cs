@@ -1,63 +1,103 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class MapSelector : MonoBehaviour
 {
     #region Dependencies
 
-    [SerializeField] private InputManager inputManager;
-    [SerializeField] private MapManager mapManager;
-    [SerializeField] private new Camera camera;
+    [SerializeField] private InputManager _inputManager;
+    [SerializeField] private MapManager _mapManager;
+    [SerializeField] private new Camera _camera;
 
     #endregion
 
     #region Configuration
 
-    [SerializeField] private string targetTags;
-    [SerializeField] private LayerMask targetMask;
+    [SerializeField] private string _targetTags;
+    [SerializeField] private LayerMask _targetMask;
+    [SerializeField] private GameObject _selectionMarkerPrefab;
+    [SerializeField] private float _selectionMarkersYPosition = 0.125f;
 
     #endregion
+
+    private List<GameObject> _instantiatedSelectionMarkers = new();
 
     #region Events
 
     public event Action<MapTile> TileSelectedEvent;
     public event Action<MapTile> TileDeselectedEvent;
-
-    public event Action<MapTile> TileHovered;
+    public event Action<MapTile> TileHoveredEvent;
+    public event Action<List<MapTile>, List<MapTile>> SelectionChanged;
 
     #endregion
 
     // Public properties
-    public MapTile SelectedTile { get; set; }
-    public MapTile HoveredTile { get; set; }
+    public MapTile SelectedTile { get; private set; }
+    public MapTile HoveredTile { get; private set; }
+    public List<MapTile> Selection { get; private set; } = new();
+
+    [field: SerializeField] public int SelectionSize { get; set; } = 1;
 
 
     private void Awake()
     {
-        inputManager.MainClicked += InputManagerMainClicked;
+        _inputManager.MainClickedEvent += InputManagerMainClickedEvent;
     }
 
     private void Update()
     {
         CheckHover();
+
+        UpdateSelection();
     }
 
-    private void CheckHover()
+    private void UpdateSelection()
     {
-        var ray = camera.ScreenPointToRay(Input.mousePosition);
+        var ray = _camera.ScreenPointToRay(Input.mousePosition);
         if (!Physics.Raycast(ray, out var hit))
             return;
 
         var point = hit.point;
+
+        SelectRectangle(new Vector2(point.x, point.z), SelectionSize);
+
+        foreach (var instantiatedSelectionMarker in _instantiatedSelectionMarkers)
+        {
+            Destroy(instantiatedSelectionMarker);
+        }
         
-        var mapTile = mapManager.GetClosestTile(point);
+        _instantiatedSelectionMarkers.Clear();
         
-        if(mapTile == HoveredTile)
+        foreach (var tile in Selection)
+        {
+            var tilePosition = tile.Position;
+            var go = Instantiate(_selectionMarkerPrefab,
+                new Vector3(tilePosition.x, _selectionMarkersYPosition, tilePosition.y),
+                Quaternion.identity);
+            
+            _instantiatedSelectionMarkers.Add(go);
+        }
+    }
+
+    private void CheckHover()
+    {
+        var ray = _camera.ScreenPointToRay(Input.mousePosition);
+        if (!Physics.Raycast(ray, out var hit))
+            return;
+
+        var point = hit.point;
+
+        var mapTile = _mapManager.GetClosestTile(point);
+
+        if (mapTile == HoveredTile)
             return;
 
         HoveredTile = mapTile;
-        TileHovered?.Invoke(mapTile);
+        TileHoveredEvent?.Invoke(mapTile);
 
         // if (!hit.transform.TryGetComponent<MapTile>(out var mapTile))
         // {
@@ -65,15 +105,15 @@ public class MapSelector : MonoBehaviour
         // }
     }
 
-    private void InputManagerMainClicked()
+    private void InputManagerMainClickedEvent()
     {
-        var ray = camera.ScreenPointToRay(Input.mousePosition);
+        var ray = _camera.ScreenPointToRay(Input.mousePosition);
         if (!Physics.Raycast(ray, out var hit))
             return;
 
         var point = hit.point;
 
-        var hitTile = mapManager.GetClosestTile(point);
+        var hitTile = _mapManager.GetClosestTile(point);
 
         SelectTile(hitTile);
     }
@@ -84,7 +124,54 @@ public class MapSelector : MonoBehaviour
             TileDeselectedEvent?.Invoke(SelectedTile);
 
         SelectedTile = mapTile;
-        
+
         TileSelectedEvent?.Invoke(mapTile);
+    }
+
+    void SelectRectangle(Vector2 pos, int selectionSize)
+    {
+        var tempSelection = new List<MapTile>();
+
+        // Select tiles
+        // 
+
+        if (selectionSize % 2 == 1)
+        {
+            var posInt = Vector2Int.RoundToInt(pos);
+
+            for (int x = posInt.x - selectionSize / 2; x <= posInt.x + selectionSize / 2; x++)
+            {
+                for (int y = posInt.y - selectionSize / 2; y <= posInt.y + selectionSize / 2; y++)
+                {
+                    var position = new Vector2Int(x, y);
+                    tempSelection.Add(_mapManager.GetRequiredMapTile(position));
+                }
+            }
+        }
+        else
+        {
+            var posInt = Vector2Int.RoundToInt(pos + new Vector2(0.5f, 0.5f));
+
+            for (int x = posInt.x - selectionSize / 2; x <= posInt.x + selectionSize / 2 - 1; x++)
+            {
+                for (int y = posInt.y - selectionSize / 2; y <= posInt.y + selectionSize / 2 - 1; y++)
+                {
+                    var position = new Vector2Int(x, y);
+                    tempSelection.Add(_mapManager.GetRequiredMapTile(position));
+                }
+            }
+        }
+
+        // Check if tempSelection is the same as selection
+        // 
+
+        bool same = tempSelection.Count == Selection.Count && !Selection.Except(tempSelection).Any();
+
+        if (same)
+            return;
+
+        // ====================
+        SelectionChanged?.Invoke(Selection, tempSelection);
+        Selection = tempSelection;
     }
 }

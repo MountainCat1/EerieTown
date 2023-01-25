@@ -1,0 +1,46 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Serialization;
+
+public class BuilderController : MonoBehaviour
+{
+    #region Dependencies
+
+    [SerializeField] private InputManager _inputManager;
+    [SerializeField] private MapSelector _mapSelector;
+    [SerializeField] private MapManager _mapManager;
+
+    #endregion
+
+    [SerializeField] private Building _buildingPrefab;
+
+    private void Awake()
+    {
+        _inputManager.MainClickedEvent += InputManagerOnMainClickedEvent;
+
+        _mapSelector.TileSelectedEvent += MapSelectorOnTileSelectedEvent;
+    }
+
+    private bool PlaceBuilding(Building buildingPrefab, Vector2Int position)
+    {
+        var building = Instantiate(buildingPrefab);
+        building.Position = position;
+
+        return _mapManager.PlaceBuilding(buildingPrefab);
+    }
+    
+    #region EventHandlers
+
+    private void MapSelectorOnTileSelectedEvent(MapTile tile)
+    {
+        PlaceBuilding(_buildingPrefab, tile.Position);
+    }
+
+    private void InputManagerOnMainClickedEvent()
+    {
+    }
+
+    #endregion
+}

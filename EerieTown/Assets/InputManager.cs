@@ -6,17 +6,17 @@ public class InputManager : MonoBehaviour
 {
     #region Events
 
-    public event Action MainClicked;
-    public event Action MainClickedUp;
+    public event Action MainClickedEvent;
+    public event Action MainClickedUpEvent;
 
     #endregion
 
     public void OnFire(InputAction.CallbackContext context)
     {
         if(context.started)
-            MainClicked?.Invoke();
+            MainClickedEvent?.Invoke();
         
         if(context.canceled)
-            MainClickedUp?.Invoke();
+            MainClickedUpEvent?.Invoke();
     }
 }
