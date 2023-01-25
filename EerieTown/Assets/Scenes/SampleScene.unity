@@ -123,50 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &517465987
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 517465988}
-  - component: {fileID: 517465989}
-  m_Layer: 0
-  m_Name: Input Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &517465988
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 517465987}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 893181176}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &517465989
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 517465987}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 925a223cb0f4dab4bb20209f2cdbd46c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &572097597
 GameObject:
   m_ObjectHideFlags: 0
@@ -395,7 +351,7 @@ GameObject:
   m_Component:
   - component: {fileID: 640472510}
   m_Layer: 0
-  m_Name: '=====    DYNAMIC   ===== '
+  m_Name: '=====   DYNAMIC   ===== '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -565,6 +521,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 893181176}
+  - component: {fileID: 893181178}
   - component: {fileID: 893181177}
   m_Layer: 0
   m_Name: Input System
@@ -584,8 +541,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 517465988}
+  m_Children: []
   m_Father: {fileID: 1515285235}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -624,7 +580,7 @@ MonoBehaviour:
     m_ActionName: Player/Look[/Mouse/delta]
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 517465989}
+      - m_Target: {fileID: 893181178}
         m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
         m_MethodName: OnFire
         m_Mode: 0
@@ -683,6 +639,18 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 1316523160}
+--- !u!114 &893181178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 893181175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925a223cb0f4dab4bb20209f2cdbd46c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &910634114
 GameObject:
   m_ObjectHideFlags: 0
@@ -901,10 +869,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4338d131fb884535b8fbdd51475d8bc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputManager: {fileID: 517465989}
+  inputManager: {fileID: 0}
   mapManager: {fileID: 1796815214}
   camera: {fileID: 1316523160}
   targetTags: Map
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &1796815214
 MonoBehaviour:
   m_ObjectHideFlags: 0
