@@ -7,15 +7,15 @@ namespace Population
     public abstract class Occupation : ScriptableObject
     {
         public string Name => GetType().Name;
-        public List<Population> Populations { get; } = new List<Population>();
-        
-        public void ActAll()
+
+        public void ActAll(IEnumerable<Population> populations)
         {
-            foreach (var population in Populations)
+            foreach (var population in populations)
             {
                 Act(population);
             }
         }
         protected abstract void Act(Population population);
+        public virtual void Initialize(){}
     }
 }

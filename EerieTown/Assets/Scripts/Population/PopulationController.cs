@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Utilities;
 
 namespace Population
 {
@@ -16,18 +17,27 @@ namespace Population
         #endregion
 
         public List<Population> Populations { get; } = new();
+        public Dictionary<Occupation, List<Population>> OccupantionsPopulations { get; } = new();
 
         private void Start()
         {
+            Debug.Log(Populations.Count);
+            
             _gameManager.TickEvent += OnTick;
+
+            foreach (var occupation in _occupations)
+            {
+                occupation.Initialize();
+                
+                OccupantionsPopulations.Add(occupation, new List<Population>());
+            }
         }
 
         private void OnTick()
         {
             foreach (var occupation in _occupations)
             {
-                
-                occupation.ActAll();
+                occupation.ActAll(OccupantionsPopulations[occupation]);
             }
         }
 
@@ -37,7 +47,7 @@ namespace Population
                 .FirstOrDefault(x => x.GetType().Name == population.OccupationName);
             
             if(targetOccupation != null)
-                targetOccupation.Populations.Add(population);
+                OccupantionsPopulations.Extend(targetOccupation, population);
             else
                 Debug.LogError($"No occupation named: {population.OccupationName}");
             

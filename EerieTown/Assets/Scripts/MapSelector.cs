@@ -43,6 +43,8 @@ public class MapSelector : MonoBehaviour
     private void Awake()
     {
         _inputManager.MainClickedEvent += InputManagerMainClickedEvent;
+
+        SelectionChanged += (_, newSelection) => UpdateSelectionMarkers(newSelection);
     }
 
     private void Update()
@@ -50,8 +52,6 @@ public class MapSelector : MonoBehaviour
         CheckHover();
 
         UpdateSelection();
-
-        UpdateSelectionMarkers();
     }
 
     private void UpdateSelection()
@@ -74,7 +74,7 @@ public class MapSelector : MonoBehaviour
         }
     }
 
-    private void UpdateSelectionMarkers()
+    private void UpdateSelectionMarkers(List<MapTile> selection)
     {
         foreach (var instantiatedSelectionMarker in _instantiatedSelectionMarkers)
         {
@@ -83,7 +83,7 @@ public class MapSelector : MonoBehaviour
         
         _instantiatedSelectionMarkers.Clear();
         
-        foreach (var tile in Selection)
+        foreach (var tile in selection)
         {
             var tilePosition = tile.Position;
             var go = Instantiate(_selectionMarkerPrefab,

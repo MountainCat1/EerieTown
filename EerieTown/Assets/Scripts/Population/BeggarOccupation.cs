@@ -8,17 +8,16 @@ namespace Population
     {
         private GameManager _gameManager;
         private BuildingController _buildingController;
-
-
-        public void Awake()
+        
+        public override void Initialize()
         {
+            base.Initialize();
             _gameManager = FindObjectOfType<GameManager>();
             _buildingController = FindObjectOfType<BuildingController>();
         }
 
         protected override void Act(Population population)
         {
-            Debug.Log("XD");
             // Every hour
             if (_gameManager.Minutes == 0)
             {
