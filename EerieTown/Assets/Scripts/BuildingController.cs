@@ -1,6 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Utilities;
 
-public class BuilderController : MonoBehaviour
+public class BuildingController : MonoBehaviour
 {
     #region Dependencies
 
@@ -10,7 +14,10 @@ public class BuilderController : MonoBehaviour
 
     #endregion
 
+    
     [SerializeField] private Building _buildingPrefab;
+
+    private Dictionary<Vector2Int, Building> Buildings { get; } = new();
 
     private void Awake()
     {
@@ -19,12 +26,31 @@ public class BuilderController : MonoBehaviour
         _mapSelector.TileSelectedEvent += MapSelectorOnTileSelectedEvent;
     }
 
+    public Building GetRandomBuildingInRange(Vector2Int center, int range)
+        => GetRandomBuildingInRange(center, range, Array.Empty<Building>());
+    
+    public Building GetRandomBuildingInRange(Vector2Int center, int range, IEnumerable<Building> except)
+    {
+        var position = VectorInt2RangeEnumerator
+            .GetRange(center, range)
+            .Where(position => Buildings.ContainsKey(position))
+            .GetRandomValue();
+        return Buildings[position];
+    }
+    
     private bool PlaceBuilding(Building buildingPrefab, Vector2Int position)
     {
         var building = Instantiate(buildingPrefab, new Vector3(position.x, 0, position.y), Quaternion.identity);
         building.Position = position;
 
-        return _mapManager.PlaceBuilding(buildingPrefab);
+        if (_mapManager.PlaceBuilding(buildingPrefab))
+        {
+            Buildings.Add(position, building);
+            return true;
+        }
+
+        Destroy(building);
+        return false;
     }
     
     #region EventHandlers

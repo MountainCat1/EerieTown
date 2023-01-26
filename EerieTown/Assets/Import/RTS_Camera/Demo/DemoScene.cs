@@ -1,20 +1,23 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class DemoScene : MonoBehaviour 
+namespace Import.RTS_Camera.Demo
 {
-    public Button btn45;
-    public Button btn90;
-
-    private void Start()
+    public class DemoScene : MonoBehaviour 
     {
-        Transform camT = Camera.main.transform;
-        btn45.onClick.AddListener(() => SetXRotation(camT, 45f));
-        btn90.onClick.AddListener(() => SetXRotation(camT, 90f));
-    }
+        public Button btn45;
+        public Button btn90;
 
-    private void SetXRotation(Transform t, float angle)
-    {
-        t.localEulerAngles = new Vector3(angle, t.localEulerAngles.y, t.localEulerAngles.z);
+        private void Start()
+        {
+            Transform camT = Camera.main.transform;
+            btn45.onClick.AddListener(() => SetXRotation(camT, 45f));
+            btn90.onClick.AddListener(() => SetXRotation(camT, 90f));
+        }
+
+        private void SetXRotation(Transform t, float angle)
+        {
+            t.localEulerAngles = new Vector3(angle, t.localEulerAngles.y, t.localEulerAngles.z);
+        }
     }
 }
